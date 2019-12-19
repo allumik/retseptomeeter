@@ -1,0 +1,30 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+
+javafx {
+    version = "13"
+    modules = ["javafx.controls", "javafx.graphics", "javafx.swing"]
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    implementation 'aopalliance:aopalliance:1.0'
+    implementation 'commons-logging:commons-logging:1.2'
+}
+
+mainClassName = 'ee.receptometer.Main'
