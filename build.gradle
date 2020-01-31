@@ -27,4 +27,6 @@ dependencies {
     implementation 'commons-logging:commons-logging:1.2'
 }
 
-mainClassName = 'ee.receptometer.Main'
+application {
+    mainClassName = 'ee.receptometer.Main'
+}

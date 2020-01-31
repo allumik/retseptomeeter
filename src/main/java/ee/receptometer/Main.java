@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.Double.parseDouble;
@@ -60,10 +61,11 @@ public class Main extends Application {
             Canvas canv = new Canvas(axis, yaxis);
             GraphicsContext gc = canv.getGraphicsContext2D();
 
-            boolean boo = getCLI();
-            if (boo) {
+            // test cli :)
+            if (getCLI()) {
                 joonista(gc);
                 try {
+                    System.out.println("Printing out file" + this.outPut);
                     printOut(canv, this.outPut);
                 } catch (RuntimeException s) {
                     System.out.println("Tekkis viga salvestamisel.");
@@ -212,12 +214,30 @@ public class Main extends Application {
         }
     }
 
-    /*
-    TODO: Add CLI support for KadiScore™
-     */
-
     public void printOut(Canvas canv, TextField outFile) {
         printOut(canv, outFile.getText());
+    }
+
+    // this goes to another branch
+    public void getNoGUI(int score) {
+        Map<String, String> params = new HashMap();
+
+        params.put("kadiScore", String.valueOf(score));
+        // [(--post=, --pre=) | (--kadiScore=), --rec=] --recrange=, --out=, --noNum=, --recInd=
+        this.kadiVa = params.containsKey("kadiScore");
+        if (params.containsKey("kadiScore")) {
+            this.kadiVa = true;
+            this.kadiscore = Integer.parseInt(params.get("kadiScore")); //int 0-200
+        } else {
+            this.postrec = Double.parseDouble(params.get("post")); //double 0-1
+            this.prerec = Double.parseDouble(params.get("pre")); //double 0-1
+        }
+        this.rec = (params.containsKey("rec")) ? Double.parseDouble(params.get("rec")) : 1; //double 0-1
+        //scale of the receptometer
+        this.recrange = (params.containsKey("recrange")) ? Double.parseDouble(params.get("recrange")) : 1;
+        if (params.containsKey("noNum")) this.noNum = params.get("noNum").equals("true");
+        if (params.containsKey("out")) this.outPut = params.get("out");
+        if (params.containsKey("recInd")) this.recInd = params.get("recInd").equals("true");
     }
 
     public boolean getCLI() {
@@ -226,18 +246,20 @@ public class Main extends Application {
         Map<String, String> params = args.getNamed();
         // [(--post=, --pre=) | (--kadiScore=), --rec=] --recrange=, --out=, --noNum=, --recInd=
         if (params.size() >= 2) {
-            this.postrec = (params.containsKey("kadiScore")) ? 0 : Double.parseDouble(params.get("post")); //double 0-1
-            this.prerec = (params.containsKey("kadiScore")) ? 0 : Double.parseDouble(params.get("pre")); //double 0-1
+            this.kadiVa = params.containsKey("kadiScore");
+            if (params.containsKey("kadiScore")) {
+                this.kadiVa = true;
+                this.kadiscore = Integer.parseInt(params.get("kadiScore")); //int 0-200
+            } else {
+                this.postrec = Double.parseDouble(params.get("post")); //double 0-1
+                this.prerec = Double.parseDouble(params.get("pre")); //double 0-1
+            }
             this.rec = (params.containsKey("rec")) ? Double.parseDouble(params.get("rec")) : 1; //double 0-1
             //scale of the receptometer
             this.recrange = (params.containsKey("recrange")) ? Double.parseDouble(params.get("recrange")) : 1;
             if (params.containsKey("noNum")) this.noNum = params.get("noNum").equals("true");
             if (params.containsKey("out")) this.outPut = params.get("out");
             if (params.containsKey("recInd")) this.recInd = params.get("recInd").equals("true");
-            if (params.containsKey("kadiScore")) {
-                this.kadiVa = true;
-                this.kadiscore = Double.parseDouble(params.get("kadiScore"));
-            }
             return true;
         }
         return false;
